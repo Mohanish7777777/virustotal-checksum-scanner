@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Integrity Verifier - Project Documentation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5; /* Lighter background for a fresh look */
+            line-height: 1.6;
+            color: #333;
+        }
+        .font-mono {
+            font-family: 'Roboto Mono', monospace;
+        }
+        .container-wrapper {
+            background-color: #ffffff;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); /* More pronounced shadow */
+            border-radius: 1.5rem; /* More rounded corners */
+            padding: 2.5rem; /* Increased padding */
+        }
+        @media (min-width: 640px) { /* Small screens and up */
+            .container-wrapper {
+                padding: 3rem;
+            }
+        }
+        @media (min-width: 768px) { /* Medium screens and up */
+            .container-wrapper {
+                padding: 4rem;
+            }
+        }
+        .header-bg {
+            background: linear-gradient(to right, #6366f1, #8b5cf6); /* Gradient header */
+            color: white;
+            padding: 2.5rem 0;
+            border-radius: 1.5rem 1.5rem 0 0; /* Rounded top corners */
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        .section-title {
+            color: #2c3e50; /* Darker heading color */
+            border-bottom: 2px solid #e0e7ff; /* Lighter, subtle border */
+            padding-bottom: 0.75rem; /* More padding */
+            margin-bottom: 2rem; /* Increased margin */
+            font-weight: 600; /* Semi-bold */
+        }
+        .code-block {
+            background-color: #2d3748; /* Darker background for code */
+            color: #f8f8f2; /* Lighter text for code */
+            border-radius: 0.75rem; /* More rounded corners */
+            padding: 1.25rem; /* More padding */
+            overflow-x: auto;
+            font-family: 'Roboto Mono', monospace; /* Use Roboto Mono for code */
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2); /* Inner shadow for depth */
+        }
+        .code-block pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .list-item {
+            margin-bottom: 0.75rem; /* Spacing for list items */
+        }
+        a.text-blue-600 {
+            transition: color 0.2s ease-in-out;
+        }
+        a.text-blue-600:hover {
+            color: #4f46e5; /* Darker blue on hover */
+        }
+        .footer {
+            border-top: 1px solid #e0e7ff;
+            padding-top: 1.5rem;
+            margin-top: 3rem;
+            color: #6b7280;
+        }
+        /* Styles for copy button within code blocks */
+        .code-block-container {
+            position: relative;
+        }
+        .code-block-container .copy-button {
+            position: absolute;
+            top: 0.75rem; /* Adjusted top for padding */
+            right: 0.75rem; /* Adjusted right for padding */
+            opacity: 0;
+            transition: opacity 0.2s ease-in-out;
+            background-color: #4a5568; /* Darker gray for button */
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem; /* text-xs */
+            line-height: 1rem;
+        }
+        .code-block-container:hover .copy-button {
+            opacity: 1;
+        }
+        .code-block-container .copy-button:hover {
+            background-color: #2c3e50; /* Even darker on hover */
+        }
+        /* Info popover styles */
+        .info-popover {
+            display: none;
+            position: absolute;
+            bottom: 125%; /* Position above the icon */
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+        }
+        .info-icon:hover + .info-popover, .info-popover:hover {
+            display: block;
+        }
+        /* Notification style */
+        #copy-notification {
+            background-color: #10b981; /* Green-500 */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: opacity 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-20 border-b border-slate-200">
+        <nav class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <h1 class="text-xl md:text-2xl font-bold text-slate-900">File Integrity Verifier</h1>
+                <!-- Removed specific navigation links as they don't apply to this content -->
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 md:py-12">
+
+        <section id="introduction" class="mb-16 scroll-mt-20">
+            <div class="max-w-4xl mx-auto text-center">
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Enhancing File Security with VirusTotal & Gemini</h2>
+                <p class="text-lg text-slate-600">This interactive documentation details a FastAPI application for verifying file integrity using SHA-256 checksums and VirusTotal. It also showcases a new client-side integration with the Gemini API to provide intelligent explanations of scan results.</p>
+            </div>
+        </section>
+
+        <section id="overview" class="mb-16 scroll-mt-20">
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-slate-900 mb-2">Project Capabilities: An Overview</h2>
+                    <p class="text-slate-600">The application combines checksum verification with threat intelligence and AI-powered insights to offer a comprehensive file security assessment.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-center">
+                    <div class="bg-white p-6 rounded-lg border border-slate-200 shadow-md">
+                        <span class="text-3xl">🧮</span>
+                        <h3 class="font-semibold mt-3 text-lg">1. SHA-256 Checksum</h3>
+                        <p class="text-sm text-slate-500">Computes unique file hashes.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg border border-slate-200 shadow-md">
+                        <span class="text-3xl">🦠</span>
+                        <h3 class="font-semibold mt-3 text-lg">2. VirusTotal Query</h3>
+                        <p class="text-sm text-slate-500">Checks hashes against known threats.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg border border-slate-200 shadow-md">
+                        <span class="text-3xl">✨</span>
+                        <h3 class="font-semibold mt-3 text-lg">3. Gemini AI Insights</h3>
+                        <p class="text-sm text-slate-500">Explains results and offers advice.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="max-w-3xl mx-auto space-y-12">
+
+            <section id="requirements" class="scroll-mt-20">
+                <h3 class="text-2xl font-bold text-slate-900 mb-4"><span class="text-blue-600">Section 1:</span> Requirements</h3>
+                <p class="text-slate-600 mb-4">To run this application, you will need the following:</p>
+                <ol class="list-decimal list-inside text-slate-600 space-y-3 pl-4 text-lg">
+                    <li class="list-item">
+                        <strong>VirusTotal API Key:</strong> Obtain a free API key from
+                        <a href="https://www.virustotal.com" target="_blank" class="text-blue-600 hover:underline transition duration-200 ease-in-out rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">https://www.virustotal.com</a>.
+                    </li>
+                    <li class="list-item">
+                        <strong>Python Libraries:</strong> Install the necessary Python packages using pip:
+                        <div class="code-block-container mt-3">
+                            <div class="code-block">
+                                <pre><code>pip install fastapi uvicorn python-multipart httpx</code></pre>
+                            </div>
+                            <button onclick="copyToClipboard('pip install fastapi uvicorn python-multipart httpx')" class="copy-button">Copy</button>
+                        </div>
+                    </li>
+                    <li class="list-item">
+                        <strong>Gemini API Key:</strong> While the Canvas environment will provide this automatically for `gemini-2.0-flash`, if you were running this outside, you would need a key from Google AI Studio.
+                    </li>
+                </ol>
+            </section>
+
+            <section id="fastapi-code" class="scroll-mt-20">
+                <h3 class="text-2xl font-bold text-slate-900 mb-4"><span class="text-blue-600">Section 2:</span> `main.py` (FastAPI Application Code)</h3>
+                <p class="text-slate-600 mb-4">The core logic of the application is encapsulated in the `main.py` file. Below is the complete code, along with comprehensive comments explaining each section and function.</p>
+                <div class="code-block-container">
+                    <div class="code-block">
+                        <pre><code>from fastapi import FastAPI, UploadFile, File
+from hashlib import sha256
+import httpx
+import os
+
+app = FastAPI()
+
+# VirusTotal API configuration
+VIRUSTOTAL_API_KEY = os.getenv("VT_API_KEY")  # Retrieve API key from environment variable
+VIRUSTOTAL_URL = "https://www.virustotal.com/api/v3/files/{}" # Endpoint for file hash lookup
+
+def calculate_sha256(file_bytes: bytes) -> str:
+    """
+    Calculates the SHA-256 hash of the given file content (bytes).
+    Args:
+        file_bytes (bytes): The content of the file as bytes.
+    Returns:
+        str: The hexadecimal SHA-256 hash of the file.
+    """
+    return sha256(file_bytes).hexdigest()
+
+async def query_virustotal(file_hash: str):
+    """
+    Asynchronously queries the VirusTotal API for information about a given file hash.
+    It expects the API key to be set as an environment variable (VT_API_KEY).
+
+    Args:
+        file_hash (str): The SHA-256 hash of the file to query.
+
+    Returns:
+        dict: A dictionary containing VirusTotal analysis results (malicious, suspicious,
+              undetected counts, reputation, and a permalink) or an error message.
+    """
+    headers = {
+        "x-apikey": VIRUSTOTAL_API_KEY # Authentication header
+    }
+    async with httpx.AsyncClient() as client: # Use httpx for asynchronous HTTP requests
+        response = await client.get(VIRUSTOTAL_URL.format(file_hash), headers=headers)
+
+        if response.status_code == 200:
+            data = response.json()
+            # Extract relevant attributes from the VirusTotal response data
+            attributes = data["data"]["attributes"]
+            last_analysis_stats = attributes["last_analysis_stats"]
+            return {
+                "malicious": last_analysis_stats.get("malicious", 0),
+                "suspicious": last_analysis_stats.get("suspicious", 0),
+                "undetected": last_analysis_stats.get("undetected", 0),
+                "reputation": attributes.get("reputation", 0),
+                "permalink": f"https://www.virustotal.com/gui/file/{file_hash}" # Link to VirusTotal report
+            }
+        elif response.status_code == 404:
+            return {"message": "Hash not found on VirusTotal"} # File hash not in VirusTotal database
+        else:
+            # Generic error handling for other HTTP status codes
+            return {"message": f"Error querying VirusTotal: {response.status_code} - {response.text}"}
+
+@app.post("/verify/")
+async def verify_file(file: UploadFile = File(...)):
+    """
+    FastAPI endpoint to accept a file upload, calculate its SHA-256 hash,
+    and query VirusTotal for threat information.
+
+    Args:
+        file (UploadFile): The uploaded file object provided by FastAPI.
+
+    Returns:
+        dict: A JSON response containing the original filename, the computed SHA-256 hash,
+              and the results obtained from the VirusTotal API.
+    """
+    content = await file.read() # Read the content of the uploaded file
+    file_hash = calculate_sha256(content) # Calculate SHA-256 hash
+
+    vt_result = await query_virustotal(file_hash) # Query VirusTotal
+
+    return {
+        "filename": file.filename,
+        "sha256": file_hash,
+        "virustotal": vt_result
+    }
+</code></pre>
+                    </div>
+                    <button onclick="copyToClipboard(document.querySelector('#fastapi-code .code-block pre code').innerText)" class="copy-button">Copy</button>
+                </div>
+            </section>
+
+            <section id="how-to-run" class="scroll-mt-20">
+                <h3 class="text-2xl font-bold text-slate-900 mb-4"><span class="text-blue-600">Section 3:</span> How to Run</h3>
+                <p class="text-slate-600 mb-4">Follow these steps to get the FastAPI server up and running:</p>
+                <ol class="list-decimal list-inside text-slate-600 space-y-3 pl-4 text-lg">
+                    <li class="list-item">
+                        <strong>Set your VirusTotal API key:</strong> Before running the application, set your API key as an environment variable.
+                        <div class="code-block-container mt-3">
+                            <div class="code-block">
+                                <pre><code>export VT_API_KEY=your_api_key_here</code></pre>
+                            </div>
+                            <button onclick="copyToClipboard('export VT_API_KEY=your_api_key_here')" class="copy-button">Copy</button>
+                        </div>
+                        <p class="text-sm text-slate-600 mt-1">
+                            <em>Replace `your_api_key_here` with your actual VirusTotal API key.</em>
+                        </p>
+                    </li>
+                    <li class="list-item">
+                        <strong>Start the server:</strong> Navigate to the directory containing `main.py` and run the server using Uvicorn.
+                        <div class="code-block-container mt-3">
+                            <div class="code-block">
+                                <pre><code>uvicorn main:app --reload</code></pre>
+                            </div>
+                            <button onclick="copyToClipboard('uvicorn main:app --reload')" class="copy-button">Copy</button>
+                        </div>
+                        <p class="text-sm text-slate-600 mt-1">
+                            The `--reload` flag enables automatic reloading of the server on code changes.
+                        </p>
+                    </li>
+                </ol>
+            </section>
+
+            <section id="how-to-test" class="scroll-mt-20">
+                <h3 class="text-2xl font-bold text-slate-900 mb-4"><span class="text-blue-600">Section 4:</span> How to Test with `curl`</h3>
+                <p class="text-slate-600 mb-4">Once the server is running, you can test the `/verify/` endpoint using `curl` from your terminal:</p>
+                <div class="code-block-container">
+                    <div class="code-block">
+                        <pre><code>curl -F "file=@yourfile.exe" http://127.0.0.1:8000/verify/</code></pre>
+                    </div>
+                    <button onclick="copyToClipboard('curl -F \"file=@yourfile.exe\" http://127.0.0.1:8000/verify/')" class="copy-button">Copy</button>
+                </div>
+                <p class="text-sm text-slate-600 mt-1">
+                    <em>Replace `yourfile.exe` with the path to an actual file on your system that you want to test.</em>
+                </p>
+            </section>
+
+            <section id="gemini-integration" class="scroll-mt-20">
+                <h3 class="text-2xl font-bold text-slate-900 mb-4"><span class="text-blue-600">Section 5:</span> Gemini API Integration (Client-Side)</h3>
+                <p class="text-slate-600 mb-4">
+                    This documentation website itself now includes a client-side feature that leverages the Gemini API. After you get a VirusTotal scan result, you can click a button to receive an LLM-powered explanation and actionable advice regarding the scan results.
+                </p>
+                <h4 class="text-xl font-semibold text-slate-800 mb-4">How it Works:</h4>
+                <ul class="list-disc list-inside text-slate-600 space-y-3 pl-4 text-lg">
+                    <li class="list-item">A "Get LLM Explanation ✨" button will appear on the page (simulated here for documentation purposes).</li>
+                    <li class="list-item">Clicking this button triggers a JavaScript function.</li>
+                    <li class="list-item">This function constructs a prompt based on the VirusTotal scan results (malicious, suspicious, undetected counts, and file hash).</li>
+                    <li class="list-item">It then makes a `fetch` call to the Gemini API (using `gemini-2.0-flash`).</li>
+                    <li class="list-item">The LLM's generated explanation and advice are then displayed directly on the web page.</li>
+                </ul>
+                <p class="text-slate-600 mt-4 text-lg">
+                    This feature provides a more user-friendly interpretation of technical security data, making it easier to understand the implications of a file scan.
+                </p>
+            </section>
+
+            <section id="interactive-demo" class="scroll-mt-20 p-6 bg-slate-100 rounded-xl shadow-inner border border-slate-200">
+                <h2 class="text-2xl sm:text-3xl section-title mb-6">Interactive Demo (Simulated)</h2>
+                <p class="text-slate-600 leading-relaxed mb-4 text-lg">
+                    Below is a simulated VirusTotal scan result. Click the button to get an LLM-powered explanation and advice. Use the "Toggle Malicious/Clean" button to see different scenarios.
+                </p>
+                <div id="simulated-vt-result" class="bg-white p-6 rounded-lg shadow-md border border-slate-200">
+                    <h3 class="text-xl font-semibold text-slate-800 mb-3">Simulated Scan Result:</h3>
+                    <p class="text-slate-700"><strong>Filename:</strong> <span id="demo-filename"></span></p>
+                    <p class="text-slate-700"><strong>SHA256:</strong> <span id="demo-sha256" class="break-all font-mono text-sm text-blue-700"></span></p>
+                    <p class="text-slate-700"><strong>Malicious Detections:</strong> <span id="demo-malicious" class="font-bold text-red-600"></span></p>
+                    <p class="text-slate-700"><strong>Suspicious Detections:</strong> <span id="demo-suspicious" class="font-bold text-yellow-600"></span></p>
+                    <p class="text-slate-700"><strong>Undetected:</strong> <span id="demo-undetected" class="font-bold text-green-600"></span></p>
+                    <p class="text-slate-700"><strong>Permalink:</strong> <a id="demo-permalink" href="#" target="_blank" class="text-blue-600 hover:underline">View on VirusTotal</a></p>
+                    <div class="mt-6 flex flex-col sm:flex-row gap-4">
+                        <button id="get-llm-explanation-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                            Get LLM Explanation ✨
+                        </button>
+                        <button id="toggle-malicious-btn" class="bg-slate-300 hover:bg-slate-400 text-slate-800 font-bold py-3 px-6 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-opacity-50">
+                            Toggle Malicious/Clean
+                        </button>
+                    </div>
+                </div>
+                <div id="llm-loading" class="hidden mt-4 text-center text-slate-600">
+                    <div class="animate-spin inline-block w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full"></div>
+                    <p class="mt-2">Generating explanation...</p>
+                </div>
+                <div id="llm-explanation" class="mt-6">
+                    <!-- LLM explanation will be loaded here -->
+                </div>
+            </section>
+
+            <section id="notes" class="scroll-mt-20">
+                <h2 class="text-2xl sm:text-3xl section-title">Notes</h2>
+                <ul class="list-disc list-inside text-slate-600 space-y-3 pl-4 text-lg">
+                    <li class="list-item">
+                        <strong>API Request Limits:</strong> The free VirusTotal API tier has certain request limits (e.g., 4 requests per minute). Be mindful of these limits during testing and deployment to avoid hitting rate limits.
+                    </li>
+                    <li class="list-item">
+                        <strong>Submitting Unknown Files:</strong> If a file's hash is not found on VirusTotal (i.e., it's an unknown file), you can extend this application to submit the file for analysis using VirusTotal's file upload endpoint (`/api/v3/files`). This feature is not included in this basic implementation but is a common next step for a more comprehensive solution.
+                    </li>
+                </ul>
+            </section>
+
+        </div>
+
+    </main>
+
+    <footer class="text-center py-8 border-t border-slate-200 mt-12">
+        <p class="text-slate-500">Project Documentation created by Gemini.</p>
+    </footer>
+
+    <div id="copy-notification" class="fixed bottom-5 right-5 bg-green-500 text-white py-2 px-4 rounded-lg shadow-lg transition-opacity opacity-0">
+        Command copied to clipboard!
+    </div>
+
+    <script>
+        function copyToClipboard(text) {
+            if (!navigator.clipboard) {
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-9999px'; // Hide it
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    showNotification();
+                } catch (err) {
+                    console.error('Fallback: Oops, unable to copy', err);
+                } finally {
+                    document.body.removeChild(textArea);
+                }
+                return;
+            }
+            navigator.clipboard.writeText(text).then(function() {
+                showNotification();
+            }, function(err) {
+                console.error('Async: Could not copy text: ', err);
+            });
+        }
+
+        function showNotification() {
+            const notification = document.getElementById('copy-notification');
+            notification.classList.remove('opacity-0');
+            notification.classList.add('opacity-100');
+            setTimeout(() => {
+                notification.classList.remove('opacity-100');
+                notification.classList.add('opacity-0');
+            }, 2000);
+        }
+
+        // Function to simulate a VirusTotal result for demonstration
+        function simulateVirusTotalResult(isMalicious = false) {
+            const hash = "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2";
+            let malicious = 0;
+            let suspicious = 0;
+            let undetected = 100;
+
+            if (isMalicious) {
+                malicious = Math.floor(Math.random() * 20) + 1; // 1 to 20 malicious detections
+                suspicious = Math.floor(Math.random() * 10);    // 0 to 9 suspicious detections
+                undetected = 100 - (malicious + suspicious);
+                if (undetected < 0) undetected = 0;
+            }
+
+            return {
+                filename: "example.exe",
+                sha256: hash,
+                virustotal: {
+                    malicious: malicious,
+                    suspicious: suspicious,
+                    undetected: undetected,
+                    reputation: isMalicious ? -50 : 0,
+                    permalink: `https://www.virustotal.com/gui/file/${hash}`
+                }
+            };
+        }
+
+        // Function to call the Gemini API
+        async function getLlmExplanation(vtResult) {
+            const llmExplanationDiv = document.getElementById('llm-explanation');
+            const llmLoadingDiv = document.getElementById('llm-loading');
+
+            llmExplanationDiv.innerHTML = ''; // Clear previous explanation
+            llmLoadingDiv.classList.remove('hidden'); // Show loading indicator
+
+            const prompt = `Given the following VirusTotal analysis results for a file with SHA-256 hash ${vtResult.sha256}:
+            Malicious detections: ${vtResult.virustotal.malicious},
+            Suspicious detections: ${vtResult.virustotal.suspicious},
+            Undetected: ${vtResult.virustotal.undetected}.
+            Reputation: ${vtResult.virustotal.reputation}.
+            
+            Please provide a concise, easy-to-understand summary of what these results mean, the potential risks if the file is malicious, and general advice on what a user should do. Focus on clarity and actionable advice. If the file is undetected, explain what 'undetected' means in the context of VirusTotal and general security.`;
+
+            let chatHistory = [];
+            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+
+            const payload = { contents: chatHistory };
+            const apiKey = ""; // Canvas will provide this automatically for gemini-2.0-flash
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    llmExplanationDiv.innerHTML = `<div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-lg shadow-md mt-4">
+                                                        <h4 class="font-semibold text-lg mb-2">✨ LLM Explanation & Advice:</h4>
+                                                        <p>${text.replace(/\n/g, '<br>')}</p>
+                                                   </div>`;
+                } else {
+                    llmExplanationDiv.innerHTML = `<p class="text-red-500 mt-4">Error: Could not get a valid response from the LLM.</p>`;
+                }
+            } catch (error) {
+                console.error("Error calling Gemini API:", error);
+                llmExplanationDiv.innerHTML = `<p class="text-red-500 mt-4">Error calling Gemini API: ${error.message}</p>`;
+            } finally {
+                llmLoadingDiv.classList.add('hidden'); // Hide loading indicator
+            }
+        }
+
+        // This section is for demonstration purposes within the documentation page.
+        // It simulates the display of a VirusTotal result and the LLM button.
+        document.addEventListener('DOMContentLoaded', () => {
+            const demoSection = document.getElementById('interactive-demo'); // Target existing section
+
+            let currentVtResult;
+            let isCurrentlyMalicious = false;
+
+            function updateDemoResult() {
+                currentVtResult = simulateVirusTotalResult(isCurrentlyMalicious);
+                document.getElementById('demo-filename').textContent = currentVtResult.filename;
+                document.getElementById('demo-sha256').textContent = currentVtResult.sha256;
+                document.getElementById('demo-malicious').textContent = currentVtResult.virustotal.malicious;
+                document.getElementById('demo-suspicious').textContent = currentVtResult.virustotal.suspicious;
+                document.getElementById('demo-undetected').textContent = currentVtResult.virustotal.undetected;
+                document.getElementById('demo-permalink').href = currentVtResult.virustotal.permalink;
+                document.getElementById('llm-explanation').innerHTML = ''; // Clear LLM explanation on result change
+            }
+
+            updateDemoResult(); // Initial load
+
+            document.getElementById('get-llm-explanation-btn').addEventListener('click', () => {
+                getLlmExplanation(currentVtResult);
+            });
+
+            document.getElementById('toggle-malicious-btn').addEventListener('click', () => {
+                isCurrentlyMalicious = !isCurrentlyMalicious;
+                updateDemoResult();
+            });
+        });
+    </script>
+</body>
+</html>
